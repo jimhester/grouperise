@@ -43,7 +43,7 @@ SEXP grouped_sum_rle1(SEXP x, SEXP g, SEXP l, SEXP m_) {
   // Only parallelise if its worth it:
   // Need to experiment to figure out where to set this value
   double avg_run_length = Rf_length(x) / n1;
-  int parallel = avg_run_length > 100;
+  /*int parallel = avg_run_length > 100;*/
 
   #pragma omp parallel for reduction(+:p_out[:m]) strategy(dynamic)
   for (int j1 = 0; j1 < n1; ++j1) {
