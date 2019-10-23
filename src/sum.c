@@ -3,20 +3,24 @@
 #include <Rinternals.h>
 #include <omp.h>
 
+void grouped_sum1_impl(int* p_x, int *p_g, int* p_end, int* p_out) {
+  while(p_x < p_end) {
+    p_out[*p_g++] += *p_x++;
+  }
+}
+
 // Assume x and g are the same length
 SEXP grouped_sum1(SEXP x, SEXP g, SEXP m_) {
   int m = Rf_asInteger(m_);
-  SEXP out = PROTECT(Rf_allocVector(REALSXP, m));
-  double *p_out = REAL(out);
-  memset(p_out, 0, m * sizeof(double));
+  SEXP out = PROTECT(Rf_allocVector(INTSXP, m));
+  int *p_out = INTEGER(out);
+  memset(p_out, 0, m * sizeof(int));
 
-  int n = Rf_length(x);
-  double *p_x = REAL(x);
+  R_xlen_t n = Rf_xlength(x);
+  int *p_x = INTEGER(x);
   int *p_g = INTEGER(g);
-  for (int i = 0; i < n; ++i) {
-    int g = p_g[i] - 1;
-    p_out[g] += p_x[i];
-  }
+
+  grouped_sum1_impl(p_x, p_g, p_x + n, p_out);
 
   UNPROTECT(1);
 
